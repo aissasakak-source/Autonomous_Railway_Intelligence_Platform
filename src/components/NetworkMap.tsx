@@ -166,15 +166,15 @@ export function NetworkMap({
       </svg>
 
       {/* Overlay badge */}
-      <div className="absolute top-3 right-3 panel px-3 py-1.5 text-[11px] text-slate-400 flex items-center gap-2">
-        <CircleDot size={12} className="text-cyan-400" />
-        Overlay: <span className="text-slate-200 font-medium">{overlay === 'congestion' ? 'Track Congestion Heatmap' : overlay === 'freight' ? 'Freight Capacity Load' : 'Infrastructure Wear & Sensor Status'}</span>
+      <div className="hidden md:flex absolute top-3 right-3 panel px-3 py-1.5 text-[11px] text-slate-400 items-center gap-2 max-w-[55vw]">
+        <CircleDot size={12} className="text-cyan-400 shrink-0" />
+        <span className="truncate">{overlay === 'congestion' ? 'Congestion Heatmap' : overlay === 'freight' ? 'Freight Capacity Load' : 'Wear & Sensor Status'}</span>
       </div>
 
       {/* Sim clock */}
-      <div className="absolute top-3 left-3 panel px-3 py-1.5 text-[11px] text-slate-400 flex items-center gap-2 font-mono-num">
-        <Gauge size={12} className="text-cyan-400" />
-        Sim time <span className="text-slate-200 font-semibold">{fmtClock(simMinute)}</span>
+      <div className="absolute top-3 left-3 panel px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-[11px] text-slate-400 flex items-center gap-1.5 sm:gap-2 font-mono-num">
+        <Gauge size={12} className="text-cyan-400 shrink-0" />
+        <span className="hidden sm:inline">Sim time</span> <span className="text-slate-200 font-semibold">{fmtClock(simMinute)}</span>
       </div>
     </div>
   );
@@ -199,7 +199,7 @@ export function TrainInspectorDrawer({
   const trackLimit = Math.min(train.maxSpeed, maxTrackSpeed);
 
   return (
-    <div className="w-[360px] shrink-0 panel panel-glow slide-in flex flex-col h-full overflow-y-auto">
+    <div className="w-full xl:w-[360px] xl:shrink-0 panel panel-glow slide-in flex flex-col max-h-[60vh] xl:max-h-none overflow-y-auto">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#1E293B] sticky top-0 bg-[#0F172A]/95 z-10">
         <div className="flex items-center gap-2.5">
           <div className="p-2 rounded-lg" style={{ background: `${meta.color}18` }}>

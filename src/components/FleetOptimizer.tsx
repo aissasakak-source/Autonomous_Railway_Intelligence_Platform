@@ -70,9 +70,9 @@ export function FleetOptimizer({ world, onOptimizerRun }: { world: World; onOpti
     .map((t) => ({ id: t.id, tonnage: t.tonnage, cars: t.cars, load: t.loadPct, delay: Math.round(t.delayMin) }));
 
   return (
-    <div className="grid grid-cols-12 gap-4 h-full min-h-0 overflow-y-auto pr-1">
+    <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-4 xl:h-full min-h-0 overflow-y-auto xl:overflow-hidden pr-1">
       {/* Sliders */}
-      <div className="col-span-3 flex flex-col gap-3">
+      <div className="xl:col-span-3 flex flex-col gap-3">
         <Panel title="Dispatch Priorities" subtitle="Move the sliders — the OR solver recomputes the fleet plan instantly">
           <div className="space-y-3">
             <WeightSlider label="Maximise Freight Throughput" desc="Push more wagon groups into active service; accepts extra empty running." value={weights.throughput} onChange={(v) => setWeights((w) => ({ ...w, throughput: v }))} tone="text-emerald-400" />
@@ -101,7 +101,7 @@ export function FleetOptimizer({ world, onOptimizerRun }: { world: World; onOpti
       </div>
 
       {/* Allocation table + wagon map */}
-      <div className="col-span-6 flex flex-col gap-4 min-h-0">
+      <div className="xl:col-span-6 flex flex-col gap-4 min-h-0">
         <Panel title="Wagon Allocation Table — Yard Balance Plan" subtitle="Surplus wagons at each marshalling yard and the solver's repositioning move">
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -149,7 +149,7 @@ export function FleetOptimizer({ world, onOptimizerRun }: { world: World; onOpti
           </div>
         </Panel>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Panel title="Yard Wagon Balance" subtitle="On-hand vs 7-day demand">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={allocationData} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
@@ -178,7 +178,7 @@ export function FleetOptimizer({ world, onOptimizerRun }: { world: World; onOpti
       </div>
 
       {/* Live freight consists + distribution */}
-      <div className="col-span-3 flex flex-col gap-4 min-h-0">
+      <div className="xl:col-span-3 flex flex-col gap-4 min-h-0">
         <Panel title="Freight Consists In Transit" subtitle="Live gross tonnage under way">
           <div className="space-y-2">
             {urgentTrains.map((t) => (

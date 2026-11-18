@@ -66,8 +66,8 @@ export function MaintenanceView({ onSchedule }: { onSchedule: (summary: string) 
   }), []);
 
   return (
-    <div className="grid grid-cols-12 gap-4 h-full min-h-0 overflow-y-auto pr-1">
-      <div className="col-span-5 flex flex-col gap-4">
+    <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-4 xl:h-full min-h-0 overflow-y-auto xl:overflow-hidden pr-1">
+      <div className="xl:col-span-5 flex flex-col gap-4">
         <Panel
           title="Track & Rolling Stock Sensor Grid"
           subtitle="Acoustic arrays, WILD, track geometry, switch motors and axle-bearing telemetry"
@@ -94,15 +94,15 @@ export function MaintenanceView({ onSchedule }: { onSchedule: (summary: string) 
                   onClick={() => setSelectedSensor(s)}
                   className={`w-full text-left rounded-lg border px-3 py-2 transition-colors ${selectedSensor.id === s.id ? 'border-cyan-500/50 bg-cyan-500/10' : 'border-[#1E293B] bg-[#0B1120] hover:border-slate-600'}`}
                 >
-                  <div className="flex items-center gap-2 text-xs">
+                  <div className="flex items-center gap-2 text-xs flex-wrap">
                     <SeverityDot severity={s.severity} />
                     <span className="font-mono-num font-semibold text-slate-200">{s.corridorId.toUpperCase()}</span>
                     <span className="text-slate-500">km {s.chainageKm}</span>
-                    <span className="ml-auto text-[10px] text-slate-500">{s.sensor}</span>
+                    <span className="ml-auto text-[10px] text-slate-500 truncate max-w-[45%]">{s.sensor}</span>
                   </div>
                   <div className="text-[11px] text-slate-400 mt-1 leading-snug">{s.reading}</div>
-                  <div className="text-[10px] mt-1 flex items-center gap-1.5">
-                    <Cpu size={10} className="text-cyan-400" />
+                  <div className="text-[10px] mt-1 flex items-center gap-1.5 flex-wrap">
+                    <Cpu size={10} className="text-cyan-400 shrink-0" />
                     <span className={s.severity === 'critical' ? 'text-red-400' : s.severity === 'advisory' ? 'text-amber-400' : 'text-slate-500'}>{s.predictedFailure}</span>
                     <span className="ml-auto font-mono-num text-slate-600">{Math.round(s.confidence * 100)}%</span>
                   </div>
@@ -126,7 +126,7 @@ export function MaintenanceView({ onSchedule }: { onSchedule: (summary: string) 
         </Panel>
       </div>
 
-      <div className="col-span-4 flex flex-col gap-4">
+      <div className="xl:col-span-4 flex flex-col gap-4">
         <Panel
           title={`Sensor Waveform — ${selectedSensor.sensor}`}
           subtitle={`${selectedSensor.corridorId.toUpperCase()} · km ${selectedSensor.chainageKm} · last 40 scans`}
@@ -172,12 +172,12 @@ export function MaintenanceView({ onSchedule }: { onSchedule: (summary: string) 
               const win = scheduled[wo.id];
               return (
                 <div key={wo.id} className={`rounded-lg border px-3 py-2 ${win ? 'border-emerald-500/35 bg-emerald-500/5' : 'border-[#1E293B] bg-[#0B1120]'}`}>
-                  <div className="flex items-center gap-2 text-xs">
+                  <div className="flex items-center gap-2 text-xs flex-wrap">
                     <PriorityTag p={wo.priority} />
                     <span className="font-mono-num font-semibold text-slate-200">{wo.id}</span>
                     <span className="text-slate-500">{wo.corridorId.toUpperCase()}</span>
-                    <span className="ml-auto flex items-center gap-1 text-[10px] text-slate-500">
-                      <HardHat size={10} /> {wo.crew}
+                    <span className="ml-auto flex items-center gap-1 text-[10px] text-slate-500 text-right">
+                      <HardHat size={10} className="shrink-0" /> {wo.crew}
                     </span>
                   </div>
                   <div className="text-[11px] text-slate-400 mt-1">{wo.task}</div>
@@ -199,7 +199,7 @@ export function MaintenanceView({ onSchedule }: { onSchedule: (summary: string) 
         </Panel>
       </div>
 
-      <div className="col-span-3 flex flex-col gap-4">
+      <div className="xl:col-span-3 flex flex-col gap-4">
         <Panel title="Fleet Health Scorecard" subtitle="Rolling-stock defect exposure by train">
           <div className="space-y-2.5">
             {[

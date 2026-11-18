@@ -84,9 +84,9 @@ export function YardView({ onSurge }: { onSurge: (summary: string) => void }) {
   const stopSurge = () => { setRunning(false); setElapsed(0); };
 
   return (
-    <div className="grid grid-cols-12 gap-4 h-full min-h-0 overflow-y-auto pr-1">
+    <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-4 xl:h-full min-h-0 overflow-y-auto xl:overflow-hidden pr-1">
       {/* Controls */}
-      <div className="col-span-3 flex flex-col gap-3">
+      <div className="xl:col-span-3 flex flex-col gap-3">
         <Panel title="What-If Traffic Surge" subtitle="Inject extra freight volume and watch congestion, dwell and energy respond">
           <div className="rounded-lg border border-[#1E293B] bg-[#0B1120] px-3.5 py-3">
             <div className="flex items-center justify-between mb-1">
@@ -130,7 +130,7 @@ export function YardView({ onSurge }: { onSurge: (summary: string) => void }) {
       </div>
 
       {/* Yard tables */}
-      <div className="col-span-6 flex flex-col gap-4">
+      <div className="xl:col-span-6 flex flex-col gap-4">
         <Panel title="Marshalling Yard Turnaround Monitor" subtitle="Bay efficiency, dwell time and intermodal transfer throughput">
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -185,7 +185,7 @@ export function YardView({ onSurge }: { onSurge: (summary: string) => void }) {
           </div>
         </Panel>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Panel title="Dwell Time vs Yard" subtitle={`Hours — baseline vs +${volumePct}% surge`}>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={YARDS.map((y, i) => ({ name: nodeById.get(y.nodeId)!.code, base: y.dwellH, surge: yardData[i].dwell }))} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
@@ -222,7 +222,7 @@ export function YardView({ onSurge }: { onSurge: (summary: string) => void }) {
       </div>
 
       {/* Ops feed */}
-      <div className="col-span-3 flex flex-col gap-4">
+      <div className="xl:col-span-3 flex flex-col gap-4">
         <Panel title="Bay Occupancy — Live Board">
           <div className="space-y-3">
             {YARDS.map((y, i) => {

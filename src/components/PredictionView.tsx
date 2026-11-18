@@ -226,8 +226,8 @@ export function PredictionView({
   );
 
   return (
-    <div className="grid grid-cols-3 gap-4 h-full min-h-0">
-      <div className="col-span-2 flex flex-col gap-4 min-h-0">
+    <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 sm:gap-4 xl:h-full min-h-0">
+      <div className="xl:col-span-2 flex flex-col gap-4 min-h-0">
         <Panel
           title="Live Stringline Diagram — Capstone–Steel City Trunk"
           subtitle="Time–distance chart with forward-projected running lines. Shaded band = injected obstruction."
@@ -240,7 +240,7 @@ export function PredictionView({
             </div>
           }
         >
-          <canvas ref={canvasRef} className="w-full h-full rounded-lg" style={{ minHeight: 300 }} />
+          <canvas ref={canvasRef} className="w-full rounded-lg" style={{ minHeight: 260 }} />
         </Panel>
 
         <Panel title="Predictive Timetable — Arrival Risk Board" subtitle="AI-predicted delay probability per service, updated every simulation minute">
@@ -287,7 +287,7 @@ export function PredictionView({
         </Panel>
       </div>
 
-      <div className="flex flex-col gap-4 min-h-0">
+      <div className="flex flex-col gap-4 min-h-0 xl:overflow-y-auto">
         <Panel title="Cascade Bottleneck Forecast" subtitle="Corridor sections predicted to saturate before the next hour">
           <div className="space-y-2.5">
             {forecasts.length === 0 && (

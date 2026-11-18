@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Activity, Brain, Boxes, ChevronLeft, ChevronRight, Gauge, LayoutGrid, Network, Play, Pause, Wrench, TrainFront, Package, HeartPulse, Timer, AlertTriangle, Radio, Trash2,
+  Activity, Brain, Boxes, ChevronLeft, ChevronRight, Gauge, LayoutGrid, Menu, Network, Play, Pause, Wrench, TrainFront, Package, HeartPulse, Timer, AlertTriangle, Radio, Trash2, X,
 } from 'lucide-react';
 import type { Obstruction, Overlay, TrainState, ViewKey } from './lib/types';
 import { createWorld, injectObstruction, tickWorld, worldKpis, fmtClock, nodeById, clearObstructions, type World } from './lib/engine';
@@ -27,6 +27,7 @@ export default function App() {
   const [world, setWorld] = useState<World>(() => createWorld());
   const [view, setView] = useState<ViewKey>('map');
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileNav, setMobileNav] = useState(false);
   const [speedIdx, setSpeedIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const [selectedTrainId, setSelectedTrainId] = useState<string | null>(null);
@@ -87,21 +88,33 @@ export default function App() {
     refreshEvents();
   }, [refreshEvents]);
 
+  const selectView = (k: ViewKey) => {
+    setView(k);
+    setMobileNav(false);
+  };
+
   return (
-    <div className="h-screen flex flex-col bg-obsidian text-slate-200 overflow-hidden">
+    <div className="h-[100dvh] flex flex-col bg-obsidian text-slate-200 overflow-hidden">
       {/* Top telemetry bar */}
-      <header className="flex items-center gap-3 px-4 h-14 border-b border-[#1E293B] bg-panel/80 backdrop-blur shrink-0 z-20">
-        <div className="flex items-center gap-2.5 pr-3 border-r border-[#1E293B]">
-          <div className="p-1.5 rounded-lg bg-cyan-500/15">
+      <header className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 h-14 border-b border-[#1E293B] bg-panel/80 backdrop-blur shrink-0 z-30">
+        <button
+          onClick={() => setMobileNav(true)}
+          className="lg:hidden p-2 -ml-1 rounded-lg border border-[#1E293B] text-slate-300 hover:text-cyan-300 transition-colors"
+          aria-label="Open navigation"
+        >
+          <Menu size={18} />
+        </button>
+        <div className="flex items-center gap-2 sm:gap-2.5 pr-2 sm:pr-3 border-r border-[#1E293B] min-w-0">
+          <div className="p-1.5 rounded-lg bg-cyan-500/15 shrink-0">
             <TrainFront size={18} className="text-cyan-400" />
           </div>
-          <div>
-            <div className="text-sm font-bold tracking-wide text-slate-100">RAILSENTINEL</div>
-            <div className="text-[9px] uppercase tracking-[0.2em] text-cyan-400/80">Autonomous Railway Intelligence</div>
+          <div className="min-w-0">
+            <div className="text-sm font-bold tracking-wide text-slate-100 truncate">RAILSENTINEL</div>
+            <div className="hidden md:block text-[9px] uppercase tracking-[0.2em] text-cyan-400/80">Autonomous Railway Intelligence</div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-1 overflow-x-auto">
+        <div className="hidden lg:flex items-center gap-2.5 flex-1 overflow-x-auto">
           <TelemStat icon={<TrainFront size={14} />} label="Active trains" value={kpis.activeTrains} tone="text-cyan-400" />
           <TelemStat icon={<HeartPulse size={14} />} label="On-time perf." value={`${kpis.otp}%`} tone={kpis.otp > 80 ? 'text-emerald-400' : kpis.otp > 60 ? 'text-amber-400' : 'text-red-400'} />
           <TelemStat icon={<Package size={14} />} label="Freight in transit" value={`${kpis.tonnageKt} kt`} tone="text-emerald-400" />
@@ -109,13 +122,13 @@ export default function App() {
           <TelemStat icon={<Timer size={14} />} label="Mean delay" value={`${kpis.avgDelay} min`} tone={kpis.avgDelay > 10 ? 'text-red-400' : 'text-slate-300'} />
         </div>
 
-        <div className="flex items-center gap-1.5 pl-3 border-l border-[#1E293B]">
-          <span className="text-[10px] uppercase tracking-wider text-slate-500 mr-1">Sim speed</span>
+        <div className="flex items-center gap-1 ml-auto lg:ml-0 lg:pl-3 lg:border-l border-[#1E293B]">
+          <span className="hidden xl:inline text-[10px] uppercase tracking-wider text-slate-500 mr-1">Sim speed</span>
           {SPEEDS.map((s, i) => (
             <button
               key={s}
               onClick={() => setSpeedIdx(i)}
-              className={`px-2.5 py-1 rounded text-[11px] font-mono-num font-semibold transition-colors ${speedIdx === i ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'text-slate-500 border border-[#1E293B] hover:text-slate-300'}`}
+              className={`px-2 sm:px-2.5 py-1.5 rounded text-[11px] font-mono-num font-semibold transition-colors ${speedIdx === i ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'text-slate-500 border border-[#1E293B] hover:text-slate-300'}`}
             >
               {s}×
             </button>
@@ -130,9 +143,55 @@ export default function App() {
         </div>
       </header>
 
-      <div className="flex flex-1 min-h-0">
-        {/* Sidebar */}
-        <aside className={`flex flex-col border-r border-[#1E293B] bg-panel/60 transition-all duration-200 ${collapsed ? 'w-16' : 'w-60'} shrink-0`}>
+      <div className="flex flex-1 min-h-0 relative">
+        {/* Mobile nav overlay */}
+        {mobileNav && (
+          <div className="lg:hidden fixed inset-0 z-40 flex">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileNav(false)} />
+            <aside className="relative w-64 max-w-[80vw] h-full flex flex-col border-r border-[#1E293B] bg-panel shadow-2xl slide-in">
+              <div className="flex items-center justify-between px-3 h-14 border-b border-[#1E293B]">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Navigation</span>
+                <button onClick={() => setMobileNav(false)} className="p-2 rounded-lg text-slate-400 hover:text-slate-200" aria-label="Close navigation">
+                  <X size={18} />
+                </button>
+              </div>
+              <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto">
+                {NAV.map((n) => {
+                  const active = view === n.key;
+                  return (
+                    <button
+                      key={n.key}
+                      onClick={() => selectView(n.key)}
+                      className={`w-full flex items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors ${active ? 'bg-cyan-500/12 text-cyan-300 border border-cyan-500/25' : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border border-transparent'}`}
+                    >
+                      <n.icon size={17} className="shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-xs font-medium truncate">{n.label}</div>
+                        <div className="text-[9px] text-slate-600 truncate">{n.desc}</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </nav>
+              <div className="px-3 pb-4">
+                <div className="panel px-3 py-2.5">
+                  <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-500 mb-2">
+                    <Radio size={11} className="text-cyan-400" /> Network status
+                  </div>
+                  <div className="space-y-1.5 text-[11px]">
+                    <StatusRow label="Corridors blocked" value={`${world.obstructions.length}`} tone={world.obstructions.length ? 'text-red-400' : 'text-emerald-400'} />
+                    <StatusRow label="Trains diverted" value={`${kpis.diverted}`} tone={kpis.diverted ? 'text-amber-400' : 'text-slate-400'} />
+                    <StatusRow label="Trains held" value={`${world.trains.filter((t) => t.status === 'held').length}`} tone={world.trains.some((t) => t.status === 'held') ? 'text-amber-400' : 'text-slate-400'} />
+                    <StatusRow label="Sim clock" value={fmtClock(world.clockMin)} tone="text-slate-300" />
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        )}
+
+        {/* Desktop sidebar */}
+        <aside className={`hidden lg:flex flex-col border-r border-[#1E293B] bg-panel/60 transition-all duration-200 ${collapsed ? 'w-16' : 'w-60'} shrink-0`}>
           <nav className="flex-1 py-3 px-2 space-y-1">
             {NAV.map((n) => {
               const active = view === n.key;
@@ -180,7 +239,7 @@ export default function App() {
         </aside>
 
         {/* Workspace */}
-        <main className="flex-1 min-w-0 p-4 overflow-hidden flex flex-col">
+        <main className="flex-1 min-w-0 p-3 sm:p-4 overflow-y-auto lg:overflow-hidden flex flex-col">
           {view === 'map' && (
             <MapView
               world={world}
@@ -227,11 +286,11 @@ function MapView({
   onEvent: (kind: string, severity: 'info' | 'warning' | 'critical', message: string) => void;
 }) {
   return (
-    <div className="flex gap-4 flex-1 min-h-0">
-      <div className="flex-1 min-w-0 flex flex-col gap-3">
+    <div className="flex flex-col xl:flex-row gap-3 sm:gap-4 flex-1 min-h-0">
+      <div className="flex-1 min-w-0 flex flex-col gap-3 min-h-0">
         {/* Toolbar */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex gap-1 panel px-1 py-1">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-wrap">
+          <div className="flex gap-1 panel px-1 py-1 w-full sm:w-auto overflow-x-auto">
             {([
               { k: 'congestion', label: 'Congestion' },
               { k: 'freight', label: 'Freight Load' },
@@ -240,30 +299,30 @@ function MapView({
               <button
                 key={o.k}
                 onClick={() => setOverlay(o.k)}
-                className={`px-3 py-1 rounded text-[11px] font-medium transition-colors ${overlay === o.k ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`flex-1 sm:flex-none px-3 py-2 sm:py-1 rounded text-[11px] font-medium whitespace-nowrap transition-colors ${overlay === o.k ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-500 hover:text-slate-300'}`}
               >
                 {o.label}
               </button>
             ))}
           </div>
 
-          <div className="ml-auto flex gap-2">
+          <div className="sm:ml-auto flex gap-2 flex-wrap">
             <button
               onClick={() => injectFailure('track-blockage')}
-              className="flex items-center gap-1.5 rounded-lg bg-red-500/90 hover:bg-red-400 text-slate-950 text-xs font-semibold px-3 py-2 transition-colors"
+              className="flex-1 sm:flex-none items-center justify-center flex gap-1.5 rounded-lg bg-red-500/90 hover:bg-red-400 text-slate-950 text-xs font-semibold px-3 py-2.5 sm:py-2 transition-colors"
             >
-              <AlertTriangle size={13} /> Simulate Track Obstruction
+              <AlertTriangle size={13} /> <span className="whitespace-nowrap">Simulate Obstruction</span>
             </button>
             <button
               onClick={() => injectFailure('switch-fault')}
-              className="flex items-center gap-1.5 rounded-lg bg-amber-500/90 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-3 py-2 transition-colors"
+              className="flex-1 sm:flex-none items-center justify-center flex gap-1.5 rounded-lg bg-amber-500/90 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-3 py-2.5 sm:py-2 transition-colors"
             >
-              <Activity size={13} /> Inject Switch Failure
+              <Activity size={13} /> <span className="whitespace-nowrap">Switch Failure</span>
             </button>
             {primaryObstructed && (
               <button
                 onClick={clearAll}
-                className="flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-3 py-2 transition-colors"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-3 py-2.5 sm:py-2 transition-colors"
               >
                 Clear All
               </button>
@@ -273,7 +332,7 @@ function MapView({
 
         <ObstructionBanner obstructions={world.obstructions} />
 
-        <div className="flex-1 min-h-0 panel panel-glow p-2">
+        <div className="flex-1 min-h-[320px] sm:min-h-[380px] lg:min-h-0 panel panel-glow p-2">
           <NetworkMap
             trains={world.trains}
             obstructions={world.obstructions}
@@ -290,7 +349,7 @@ function MapView({
         </div>
 
         {/* Bottom KPI strip */}
-        <div className="flex gap-3 overflow-x-auto shrink-0">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 shrink-0">
           <StatCard label="Trains running" value={kpis.activeTrains} icon={<TrainFront size={17} />} />
           <StatCard label="On-time" value={`${kpis.otp}%`} tone={kpis.otp > 80 ? 'emerald' : 'amber'} icon={<HeartPulse size={17} />} />
           <StatCard label="Freight in transit" value={kpis.tonnageKt} unit="kt" tone="emerald" icon={<Package size={17} />} />
@@ -305,7 +364,7 @@ function MapView({
         <TrainInspectorDrawer train={selectedTrain} onClose={() => setSelectedTrainId(null)} simMinute={world.clockMin} />
       )}
       {!selectedTrain && (
-        <div className="w-[360px] shrink-0 panel panel-glow flex flex-col items-center justify-center text-center p-6">
+        <div className="w-full xl:w-[360px] xl:shrink-0 panel panel-glow flex flex-col items-center justify-center text-center p-5 sm:p-6">
           <div className="p-3 rounded-full bg-cyan-500/10 mb-3">
             <TrainFront size={22} className="text-cyan-400" />
           </div>
@@ -363,7 +422,7 @@ function StatusRow({ label, value, tone }: { label: string; value: string; tone:
 function OpsLog({ events }: { events: { id: string; kind: string; severity: string; message: string; created_at: string }[] }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={`fixed bottom-4 right-4 z-30 transition-all ${open ? 'w-[420px]' : 'w-auto'}`}>
+    <div className={`fixed z-30 transition-all bottom-3 right-3 left-3 sm:left-auto ${open ? 'sm:w-[420px]' : 'sm:w-auto'}`}>
       {open ? (
         <Panel
           title="Operations Log"

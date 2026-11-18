@@ -16,7 +16,7 @@ export function StatCard({ label, value, unit, tone = 'cyan', delta, icon }: {
     crimson: 'text-red-400',
   }[tone];
   return (
-    <div className="panel panel-glow px-4 py-3 flex items-center gap-3 min-w-[150px]">
+    <div className="panel panel-glow px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3 min-w-0">
       {icon && <div className={`${toneCls} opacity-80`}>{icon}</div>}
       <div className="flex-1 min-w-0">
         <div className="text-[10px] uppercase tracking-wider text-slate-500 truncate">{label}</div>
@@ -45,15 +45,15 @@ export function Panel({ title, subtitle, actions, children, className = '' }: {
   return (
     <div className={`panel panel-glow flex flex-col ${className}`}>
       {(title || actions) && (
-        <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-[#1E293B]">
-          <div>
-            {title && <h3 className="text-sm font-semibold text-slate-200 tracking-wide">{title}</h3>}
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-3 sm:px-4 pt-3 pb-2 border-b border-[#1E293B]">
+          <div className="min-w-0">
+            {title && <h3 className="text-sm font-semibold text-slate-200 tracking-wide break-words">{title}</h3>}
             {subtitle && <p className="text-[11px] text-slate-500 mt-0.5">{subtitle}</p>}
           </div>
-          {actions && <div className="flex items-center gap-2">{actions}</div>}
+          {actions && <div className="flex items-center gap-2 flex-wrap max-w-full">{actions}</div>}
         </div>
       )}
-      <div className="flex-1 min-h-0 p-4">{children}</div>
+      <div className="flex-1 min-h-0 p-3 sm:p-4">{children}</div>
     </div>
   );
 }
